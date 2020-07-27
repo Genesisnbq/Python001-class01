@@ -1,1 +1,0 @@
-from movie_spiders.utils.mysql_tools import sql_engine

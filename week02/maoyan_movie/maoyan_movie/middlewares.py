@@ -1,19 +1,20 @@
-# -*- coding: utf-8 -*-
-
 # Define here the models for your spider middleware
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
-import random
-from scrapy import signals
-from urllib.parse import urlparse
 from collections import defaultdict
-from scrapy.exceptions import NotConfigured
+import random
+from urllib.parse import urlparse
+
+from scrapy import signals
 from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
 
+# useful for handling different item types with a single interface
+from itemadapter import is_item, ItemAdapter
+from scrapy.exceptions import NotConfigured
 
-class MovieSpidersSpiderMiddleware:
+
+class MaoyanMovieSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -36,7 +37,7 @@ class MovieSpidersSpiderMiddleware:
         # Called with the results returned from the Spider, after
         # it has processed the response.
 
-        # Must return an iterable of Request, dict or Item objects.
+        # Must return an iterable of Request, or item objects.
         for i in result:
             yield i
 
@@ -44,8 +45,7 @@ class MovieSpidersSpiderMiddleware:
         # Called when a spider or process_spider_input() method
         # (from other spider middleware) raises an exception.
 
-        # Should return either None or an iterable of Request, dict
-        # or Item objects.
+        # Should return either None or an iterable of Request or item objects.
         pass
 
     def process_start_requests(self, start_requests, spider):
@@ -61,7 +61,7 @@ class MovieSpidersSpiderMiddleware:
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class MovieSpidersDownloaderMiddleware:
+class MaoyanMovieDownloaderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
@@ -109,23 +109,23 @@ class MovieSpidersDownloaderMiddleware:
 
 
 class RandomHttpProxyMiddleware(HttpProxyMiddleware):
-
-    def __init__(self, auth_encoding='utf-8', http_proxy_list=None):
+    def __init__(self, auth_encoding='utf-8', proxy_list=None):
         self.proxies = defaultdict(list)
-        for proxy in http_proxy_list:
+        for proxy in proxy_list:
             parse = urlparse(proxy)
             self.proxies[parse.scheme].append(proxy)
 
     @classmethod
     def from_crawler(cls, crawler):
-        if not crawler.settings.get('PROXY_LIST'):
+        if not crawler.settings.get('HTTP_PROXY_LIST'):
             raise NotConfigured
 
-        http_proxy_list = crawler.settings.get('PROXY_LIST')
-        auth_encoding = crawler.settings.get('HTTPPROXY_AUTH_ENCODING', 'utf8')
-
+        http_proxy_list = crawler.settings.get('HTTP_PROXY_LIST')
+        auth_encoding = crawler.settings.get(
+            'HTTPPROXY_AUTH_ENCODING', 'utf-8')
         return cls(auth_encoding, http_proxy_list)
 
     def _set_proxy(self, request, scheme):
         proxy = random.choice(self.proxies[scheme])
+        print('proxy_ip:' + proxy)
         request.meta['proxy'] = proxy
