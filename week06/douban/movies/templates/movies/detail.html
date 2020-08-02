@@ -1,0 +1,31 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'css/all.css' %}" type="text/css" media="screen" title="no title" charset="utf-8">
+{% endblock %}
+
+{% block content %}
+<h1>{{movie.name}}</h1>
+<div class="search">
+	<form method="get" action="{% url "movie" movie.id  %}">
+		<input name="term"></input>
+		<button type="submit">搜索评论</button>
+	</form>
+</div>
+<div class="comments">
+  {% for comment in comments %}
+  <div class="comment">
+	  <div class="comment_header">
+		  {% with ''|center:comment.rating as range %}
+		 <i class="fas fa-user"></i> {{comment.author}} {% for i in range %}
+		 <i class="fas fa-star"></i>	
+		 {% endfor %} 
+		 {% endwith %}
+		 {{comment.timestamp|date:"Y-m-d h:i:s"}}
+	  </div>
+    {{comment.content}}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
