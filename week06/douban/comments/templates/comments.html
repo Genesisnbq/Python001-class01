@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Name: The Legend of 1900</title>
+</head>
+<body>
+<h1>Movie Name: The Legend of 1900</h1>
+<h2>Search</h2>
+<form action="." method="GET">
+    <input type="text" name="q">
+    <input type="submit" value="Search">
+</form>
+
+<h2>Reviews </h2>
+<div class="container">
+    <table class="table table-responsive">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Review</th>
+            <th scope="col">Published Date</th>
+        </tr>
+
+        {% for comment in comments %}
+            <tr>
+                <td>{{ comment.id }}   </td>
+                <td>{{ comment.rating }} </td>
+                <td>{{ comment.content }}</td>
+                <td>{{comment.date}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
